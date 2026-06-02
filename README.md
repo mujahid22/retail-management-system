@@ -36,6 +36,12 @@ The system is organised around three user roles, each with access to a specific 
 
 ---
 
+## Architecture Diagram
+
+![Retail Management System — Architecture Diagram](architecture.png)
+
+---
+
 ## Technical Architecture
 
 ```
