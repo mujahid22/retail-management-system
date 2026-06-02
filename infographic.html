@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ToyWorld Retail — System Architecture Infographic</title>
+<style>
+  :root {
+    --bg:      #0D1117;
+    --surface: #12172B;
+    --s2:      #1A1F2E;
+    --border:  #2A3050;
+    --accent:  #FF6B35;
+    --blue:    #5BB8FF;
+    --green:   #4CAF50;
+    --purple:  #BB86FC;
+    --gold:    #FFD700;
+    --text:    #FAFAFA;
+    --muted:   #8899AA;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', Inter, -apple-system, sans-serif;
+    padding: 32px;
+    min-width: 1300px;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────────────────── */
+  .header {
+    text-align: center;
+    padding: 36px 40px 28px;
+    background: linear-gradient(135deg, #12172B, #1A1F2E);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255,107,53,.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header h1 { font-size: 34px; font-weight: 800; letter-spacing: -.5px; }
+  .header h1 .acc { color: var(--accent); }
+  .header p  { color: var(--muted); font-size: 14px; margin-top: 6px; }
+
+  .pills {
+    display: flex; justify-content: center; gap: 8px;
+    margin-top: 18px; flex-wrap: wrap;
+  }
+  .pill {
+    padding: 4px 14px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; border: 1px solid; letter-spacing: .3px;
+  }
+  .p-orange { background:#2E1A0A; color:var(--accent);  border-color:#FF6B3540; }
+  .p-blue   { background:#0A1E2E; color:var(--blue);    border-color:#5BB8FF40; }
+  .p-green  { background:#0A1E0A; color:var(--green);   border-color:#4CAF5040; }
+  .p-purple { background:#1E0A2E; color:var(--purple);  border-color:#BB86FC40; }
+  .p-gray   { background:#1A2030; color:#AABBCC;         border-color:#3A4060;   }
+
+  /* ── SECTION LABEL ───────────────────────────────────────────────── */
+  .sec-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2.5px; color: var(--muted);
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 0 12px;
+  }
+  .sec-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ── GENERIC CARD ────────────────────────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+  .card-hd {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-icon {
+    width: 38px; height: 38px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .ci-orange { background:#2E1A0A; }
+  .ci-blue   { background:#0A1E2E; }
+  .ci-green  { background:#0A1E0A; }
+  .ci-purple { background:#1E0A2E; }
+  .card-title { font-size: 15px; font-weight: 700; }
+  .card-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ── DATA ITEM ───────────────────────────────────────────────────── */
+  .di {
+    background: var(--s2); border-radius: 8px;
+    padding: 11px 14px; margin-bottom: 8px; border-left: 3px solid;
+  }
+  .di.o { border-color: var(--accent); }
+  .di.b { border-color: var(--blue);   }
+  .di.g { border-color: var(--green);  }
+  .di.p { border-color: var(--purple); }
+  .di-name   { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .di-detail { font-size: 11px; color: var(--muted); line-height: 1.55; }
+
+  /* ── BADGE ───────────────────────────────────────────────────────── */
+  .b { display:inline-block; padding:1px 7px; border-radius:10px; font-size:10px; font-weight:700; margin:2px 2px 2px 0; }
+  .bo { background:#2E1A0A; color:var(--accent); }
+  .bb { background:#0A1E2E; color:var(--blue); }
+  .bg { background:#0A1E0A; color:var(--green); }
+  .bp { background:#1E0A2E; color:var(--purple); }
+  .bx { background:#1A2030; color:#AABBCC; }
+
+  /* ── 3-COLUMN FLOW ROW ───────────────────────────────────────────── */
+  .flow-3 {
+    display: grid;
+    grid-template-columns: 1fr 36px 1fr 36px 1fr;
+    gap: 0;
+    align-items: start;
+    margin-bottom: 28px;
+  }
+  .arrow-col {
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 90px; color: var(--accent); font-size: 26px; font-weight: 900;
+  }
+
+  /* ── UTILS GRID ──────────────────────────────────────────────────── */
+  .utils-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px; margin-bottom: 28px;
+  }
+  .uc {
+    background: var(--surface); border-radius: 10px; padding: 14px;
+    border: 1px solid var(--border); border-top: 3px solid var(--accent);
+  }
+  .uc-name  { font-size: 12px; font-weight: 700; color: var(--accent); font-family: 'Courier New', monospace; margin-bottom: 8px; }
+  .uc-funcs { font-size: 10px; color: var(--muted); line-height: 1.8; font-family: 'Courier New', monospace; }
+
+  /* ── STAR SCHEMA ─────────────────────────────────────────────────── */
+  .schema-wrap {
+    background: var(--surface); border-radius: 12px;
+    border: 1px solid var(--border); padding: 24px;
+    margin-bottom: 28px;
+  }
+  .schema-inner {
+    display: grid;
+    grid-template-columns: auto 60px auto;
+    gap: 0; align-items: center;
+  }
+  .dim-col  { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+  .arr-col  { display: flex; flex-direction: column; align-items: center; gap: 32px;
+              color: var(--accent); font-size: 18px; padding: 8px 0; }
+  .fact-col { display: flex; align-items: center; }
+
+  .sb {
+    background: var(--s2); border-radius: 10px;
+    border: 1px solid var(--border); padding: 14px 18px; width: 210px;
+  }
+  .sb.fact {
+    background: #1E1500; border-color: var(--accent);
+    box-shadow: 0 0 24px rgba(255,107,53,.18); width: 240px;
+  }
+  .sb-title { font-size: 12px; font-weight: 700; margin-bottom: 7px; }
+  .sb.fact .sb-title { font-size: 14px; color: var(--accent); }
+  .sb-fields { font-size: 10px; color: var(--muted); line-height: 1.9; font-family: 'Courier New', monospace; }
+  .pk { color: var(--gold); font-weight: 700; }
+  .fk { color: var(--blue); }
+  .hi { color: var(--accent); font-weight: 700; }
+
+  /* ── ROLES ───────────────────────────────────────────────────────── */
+  .roles {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 16px; margin-bottom: 28px;
+  }
+  .role-card {
+    background: var(--surface); border-radius: 12px; padding: 20px;
+    border: 1px solid var(--border);
+  }
+  .role-card.ca { border-top: 3px solid var(--blue);   }
+  .role-card.ma { border-top: 3px solid var(--accent);  }
+  .role-card.it { border-top: 3px solid var(--green);  }
+  .role-emoji { font-size: 30px; margin-bottom: 8px; }
+  .role-name  { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .role-desc  { font-size: 11px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+  .page-list  { display: flex; flex-wrap: wrap; gap: 4px; }
+
+  /* ── CHARTS SECTION ──────────────────────────────────────────────── */
+  .charts-section {
+    background: var(--surface); border-radius: 12px;
+    border: 1px solid var(--border); padding: 20px; margin-bottom: 28px;
+  }
+  .chart-tabs {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
+    margin-bottom: 16px;
+  }
+  .ct {
+    background: var(--s2); border-radius: 8px; padding: 14px;
+  }
+  .ct-title {
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 9px;
+  }
+  .ci-item {
+    font-size: 11px; color: var(--muted); padding: 2px 0;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .ci-item::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+  }
+  .kpi-strip {
+    display: flex; flex-wrap: wrap; gap: 7px; align-items: center;
+    padding-top: 14px; border-top: 1px solid var(--border);
+  }
+  .kc { background: var(--s2); border:1px solid var(--border); border-radius:6px; padding:3px 10px; font-size:10px; color:#AABBCC; }
+
+  /* ── POS FLOW ────────────────────────────────────────────────────── */
+  .pos-flow {
+    background: var(--surface); border-radius: 12px;
+    border: 1px solid var(--border); padding: 24px; margin-bottom: 28px;
+  }
+  .pos-steps { display: flex; align-items: stretch; gap: 0; }
+  .ps {
+    background: var(--s2); border-radius: 10px; padding: 16px 14px;
+    text-align: center; border: 1px solid var(--border); flex: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .ps-icon { font-size: 26px; }
+  .ps-name { font-size: 12px; font-weight: 700; }
+  .ps-desc { font-size: 10px; color: var(--muted); line-height: 1.5; }
+  .pa { color: var(--accent); font-size: 22px; font-weight: 900; padding: 0 6px; align-self: center; flex-shrink: 0; }
+
+  /* ── ADMIN HUB ───────────────────────────────────────────────────── */
+  .admin-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px;
+  }
+  .admin-card {
+    background: var(--surface); border-radius: 10px; padding: 16px;
+    border: 1px solid var(--border); border-top: 2px solid var(--purple);
+  }
+  .admin-title { font-size: 13px; font-weight: 700; color: var(--purple); margin-bottom: 8px; }
+  .admin-item  { font-size: 11px; color: var(--muted); padding: 2px 0; display:flex; gap:6px; align-items:center; }
+  .admin-item::before { content:'·'; color: var(--purple); }
+
+  /* ── FOOTER ──────────────────────────────────────────────────────── */
+  .footer {
+    text-align: center; font-size: 11px; color: var(--muted);
+    padding: 20px; border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════
+     HEADER
+════════════════════════════════════════════════════════ -->
+<div class="header">
+  <h1>🧸 <span class="acc">ToyWorld</span> Retail &mdash; End-to-End System Architecture</h1>
+  <p>Full-stack Streamlit retail management system &nbsp;·&nbsp; Star schema · Synthetic data generation · Interactive analytics · Role-based access</p>
+  <div class="pills">
+    <span class="pill p-orange">Python 3.13</span>
+    <span class="pill p-orange">Streamlit 1.58</span>
+    <span class="pill p-blue">Pandas 3.0</span>
+    <span class="pill p-blue">openpyxl 3.1</span>
+    <span class="pill p-purple">Plotly 6.7</span>
+    <span class="pill p-green">Faker 40</span>
+    <span class="pill p-gray">Star Schema</span>
+    <span class="pill p-gray">Role-Based Access</span>
+    <span class="pill p-gray">4 Pages · 3 Roles</span>
+    <span class="pill p-gray">16 Charts</span>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     SECTION 1 — END-TO-END FLOW (3 columns)
+════════════════════════════════════════════════════════ -->
+<div class="sec-label">End-to-End Data Flow</div>
+<div class="flow-3">
+
+  <!-- DATA SOURCES -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-icon ci-blue">🗄️</div>
+      <div>
+        <div class="card-title">Data Sources</div>
+        <div class="card-sub">Where all data originates</div>
+      </div>
+    </div>
+
+    <div class="di o">
+      <div class="di-name">Faker 40 — Synthetic Generator</div>
+      <div class="di-detail">
+        Generates realistic US retail data on demand<br>
+        500 customers · 300+ products · 50 cities<br>
+        Seasonal weights: Nov–Dec ×3.5 · Spring ×1.5 · Summer ×1.2<br>
+        Seeded at 42 for reproducibility
+      </div>
+    </div>
+
+    <div class="di b">
+      <div class="di-name">sales_data.xlsx &nbsp;<span class="bx">openpyxl</span></div>
+      <div class="di-detail">
+        Multi-sheet Excel workbook — star schema<br>
+        <span class="b bo">fact_sales</span>
+        <span class="b bb">dim_customer</span>
+        <span class="b bb">dim_product</span>
+        <span class="b bb">dim_date</span>
+        <span class="b bb">dim_geography</span><br>
+        ~10,000 sales rows · 2024–01-01 to 2025–12–31
+      </div>
+    </div>
+
+    <div class="di g">
+      <div class="di-name">session_log.csv</div>
+      <div class="di-detail">
+        Login &amp; logout events per browser session<br>
+        session_id · role · login_time · duration_mins · logout_type
+      </div>
+    </div>
+
+    <div class="di p">
+      <div class="di-name">system_log.csv</div>
+      <div class="di-detail">
+        Structured app event log<br>
+        Levels: INFO / WARNING / ERROR<br>
+        Sources: Auth · Transaction · DataModel
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-col">→</div>
+
+  <!-- PYTHON PROCESSING -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-icon ci-orange">⚙️</div>
+      <div>
+        <div class="card-title">Python Processing Layer</div>
+        <div class="card-sub">Libraries + utility modules (utils/)</div>
+      </div>
+    </div>
+
+    <div class="di o">
+      <div class="di-name">Streamlit 1.58</div>
+      <div class="di-detail">
+        Multi-page app · st.navigation · role routing<br>
+        st.cache_data(ttl) · st.session_state · st.dialog<br>
+        Custom CSS (dark theme #12172B · accent #FF6B35)
+      </div>
+    </div>
+
+    <div class="di b">
+      <div class="di-name">Pandas 3.0 + openpyxl 3.1</div>
+      <div class="di-detail">
+        DataFrame merges (4-table star join)<br>
+        groupBy · pivot · agg · YoY calculations<br>
+        Incremental Excel appends via openpyxl workbook
+      </div>
+    </div>
+
+    <div class="di p">
+      <div class="di-name">Plotly 6.7</div>
+      <div class="di-detail">
+        16 chart functions in charts.py<br>
+        Line · Bar · Donut · Pie · Scatter · Heatmap · Choropleth<br>
+        Dark paper_bgcolor (#1A1F2E) · custom color palette
+      </div>
+    </div>
+
+    <div class="di g">
+      <div class="di-name">Faker 40 + uuid + datetime</div>
+      <div class="di-detail">
+        Bulk synthetic generation (data_generator.py)<br>
+        UUID transaction IDs · date dimension builder<br>
+        US state tax rates · city-to-state mapping
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-col">→</div>
+
+  <!-- RENDERED UI -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-icon ci-green">🖥️</div>
+      <div>
+        <div class="card-title">Rendered UI — Streamlit Pages</div>
+        <div class="card-sub">What users see in the browser</div>
+      </div>
+    </div>
+
+    <div class="di b">
+      <div class="di-name">🔐 Login Page &nbsp;<span class="bx">app.py</span></div>
+      <div class="di-detail">Role selector dropdown · role badge preview · session init · sidebar hidden on login screen</div>
+    </div>
+
+    <div class="di o">
+      <div class="di-name">🛒 Point of Sale &nbsp;<span class="bx">1_Transaction.py</span></div>
+      <div class="di-detail">
+        3-column layout: Product Scanner · Cart + Billing · Customer &amp; Payment<br>
+        Live tax calc by US state · Receipt modal (st.dialog)
+      </div>
+    </div>
+
+    <div class="di p">
+      <div class="di-name">🗄️ Data Model &nbsp;<span class="bx">2_Data_Model.py</span></div>
+      <div class="di-detail">
+        Star schema ASCII diagram · Generate ~10k rows button<br>
+        5 table tabs · column definitions · search/filter
+      </div>
+    </div>
+
+    <div class="di g">
+      <div class="di-name">📊 Analytics Dashboard &nbsp;<span class="bx">3_Analytics.py</span></div>
+      <div class="di-detail">
+        6 KPI cards · 4 filter controls · 16 Plotly charts<br>
+        4 tabs: Time · Product · Geo · Customer · YoY comparison
+      </div>
+    </div>
+
+    <div class="di" style="border-color:var(--purple);">
+      <div class="di-name" style="color:var(--purple);">🔧 Admin Hub &nbsp;<span class="bx">4_Admin_Hub.py</span></div>
+      <div class="di-detail">
+        Session tracker · system event log · data store health<br>
+        IT Manager only · auto-refresh toggle (30s)
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .flow-3 -->
+
+
+<!-- ════════════════════════════════════════════════════════
+     SECTION 2 — UTILITY MODULES
+════════════════════════════════════════════════════════ -->
+<div class="sec-label">Utility Modules (utils/)</div>
+<div class="utils-grid">
+  <div class="uc">
+    <div class="uc-name">data_generator.py</div>
+    <div class="uc-funcs">
+      build_dim_customer(n=500)<br>
+      build_dim_product()<br>
+      build_dim_date(start, end)<br>
+      build_dim_geography()<br>
+      build_fact_sales(…, n=10k)<br>
+      generate_all(path)
+    </div>
+  </div>
+  <div class="uc">
+    <div class="uc-name">excel_handler.py</div>
+    <div class="uc-funcs">
+      load_all() → Dict[DataFrame]<br>
+      load_sheet(sheet)<br>
+      upsert_customer(data)<br>
+      upsert_geography(data)<br>
+      ensure_date_exists(d)<br>
+      append_sale_rows(rows)
+    </div>
+  </div>
+  <div class="uc">
+    <div class="uc-name">schema.py</div>
+    <div class="uc-funcs">
+      CATEGORIES (15 categories)<br>
+      TAX_BY_STATE (50 states)<br>
+      US_REGIONS (4 regions)<br>
+      PAYMENT_MODES (5 modes)<br>
+      AGE_GROUPS (6 groups)<br>
+      Dataclasses for 5 tables
+    </div>
+  </div>
+  <div class="uc">
+    <div class="uc-name">charts.py</div>
+    <div class="uc-funcs">
+      monthly_revenue_trend()<br>
+      quarterly_revenue()<br>
+      state_choropleth()<br>
+      sales_heatmap()<br>
+      category_share_donut()<br>
+      + 11 more Plotly funcs
+    </div>
+  </div>
+  <div class="uc">
+    <div class="uc-name">logger.py</div>
+    <div class="uc-funcs">
+      log_login(role) → session_id<br>
+      log_logout(session_id)<br>
+      log_event(level, src, evt)<br>
+      load_session_log() → df<br>
+      load_system_log() → df<br>
+      → CSV append persistence
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     SECTION 3 — STAR SCHEMA
+════════════════════════════════════════════════════════ -->
+<div class="sec-label">Star Schema — sales_data.xlsx (5 sheets)</div>
+<div class="schema-wrap">
+  <div class="schema-inner">
+
+    <!-- Dimension tables on the left -->
+    <div class="dim-col">
+      <div class="sb">
+        <div class="sb-title">👤 dim_customer</div>
+        <div class="sb-fields">
+          <span class="pk">customer_id PK</span><br>
+          customer_name · email<br>
+          phone · age_group · gender<br>
+          <em style="color:#556677">500 seed rows · upserted on POS</em>
+        </div>
+      </div>
+      <div class="sb">
+        <div class="sb-title">📦 dim_product</div>
+        <div class="sb-fields">
+          <span class="pk">product_id PK</span><br>
+          product_name · category<br>
+          sub_category · brand · sku<br>
+          unit_cost · unit_price<br>
+          <em style="color:#556677">15 categories · 300+ SKUs</em>
+        </div>
+      </div>
+      <div class="sb">
+        <div class="sb-title">📅 dim_date</div>
+        <div class="sb-fields">
+          <span class="pk">date_id PK</span> (YYYYMMDD)<br>
+          full_date · year · quarter<br>
+          month · month_name<br>
+          week_of_year · day_of_week<br>
+          day_name · is_weekend<br>
+          <em style="color:#556677">730 rows · 2024–01-01 to 2025–12–31</em>
+        </div>
+      </div>
+      <div class="sb">
+        <div class="sb-title">🌎 dim_geography</div>
+        <div class="sb-fields">
+          <span class="pk">geography_id PK</span><br>
+          city · state · region · zip_code<br>
+          <em style="color:#556677">50 US cities · 4 regions</em><br>
+          <em style="color:#556677">Northeast · South · Midwest · West</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arrows -->
+    <div class="arr-col">
+      <span>──▶</span>
+      <span>──▶</span>
+      <span>──▶</span>
+      <span>──▶</span>
+    </div>
+
+    <!-- Fact table on the right -->
+    <div class="fact-col">
+      <div class="sb fact">
+        <div class="sb-title">⭐ fact_sales</div>
+        <div class="sb-fields">
+          <span class="pk">sale_id PK</span><br>
+          transaction_id<br>
+          <span class="fk">customer_id FK</span><br>
+          <span class="fk">product_id FK</span><br>
+          <span class="fk">date_id FK</span><br>
+          <span class="fk">geography_id FK</span><br>
+          qty · unit_cost · unit_price<br>
+          discount_pct · discount_amount<br>
+          subtotal · tax_rate · tax_amount<br>
+          total_amount · payment_mode<br>
+          <br>
+          <span class="hi">~10,000 rows · 2024–2025</span><br>
+          <span style="color:var(--muted);font-size:10px">Appended on each POS sale</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     SECTION 4 — ROLE-BASED ACCESS
+════════════════════════════════════════════════════════ -->
+<div class="sec-label">Role-Based Access Control</div>
+<div class="roles">
+
+  <div class="role-card ca">
+    <div class="role-emoji">🛒</div>
+    <div class="role-name">Cashier</div>
+    <div class="role-desc">Front-of-store staff operating the till — restricted to the point of sale terminal only. Cannot view sales data or admin tools.</div>
+    <div class="page-list">
+      <span class="b bb">🛒 Point of Sale</span>
+    </div>
+  </div>
+
+  <div class="role-card ma">
+    <div class="role-emoji">🏪</div>
+    <div class="role-name">Store Manager</div>
+    <div class="role-desc">Sales performance visibility — can process transactions and monitor revenue, KPIs, and charts in the analytics dashboard.</div>
+    <div class="page-list">
+      <span class="b bb">🛒 Point of Sale</span>
+      <span class="b bo">📊 Sales Dashboard</span>
+    </div>
+  </div>
+
+  <div class="role-card it">
+    <div class="role-emoji">💻</div>
+    <div class="role-name">IT Manager</div>
+    <div class="role-desc">Full system access — all pages including raw data model explorer, analytics, and the admin hub with system logs and health panel.</div>
+    <div class="page-list">
+      <span class="b bb">🛒 Point of Sale</span>
+      <span class="b bp">🗄️ Data Model</span>
+      <span class="b bo">📊 Analytics</span>
+      <span class="b bx">🔧 Admin Hub</span>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     SECTION 5 — ANALYTICS CHARTS
+════════════════════════════════════════════════════════ -->
+<div class="sec-label">Analytics Dashboard — 16 Plotly Visualisations + 6 KPI Cards</div>
+<div class="charts-section">
+  <div class="chart-tabs">
+    <div class="ct">
+      <div class="ct-title">⏱️ Time Analytics</div>
+      <div class="ci-item">Monthly Revenue Trend (line)</div>
+      <div class="ci-item">Quarterly Revenue (bar)</div>
+      <div class="ci-item">Day-of-Week Sales (bar)</div>
+      <div class="ci-item">Sales Activity Heatmap (week × day)</div>
+      <div class="ci-item">Monthly Revenue Summary table</div>
+    </div>
+    <div class="ct">
+      <div class="ct-title">📦 Product Analytics</div>
+      <div class="ci-item">Category Revenue Bar</div>
+      <div class="ci-item">Category Share Donut</div>
+      <div class="ci-item">Top 15 Products Bar</div>
+      <div class="ci-item">Price vs Qty Scatter</div>
+      <div class="ci-item">Category Year-over-Year table</div>
+    </div>
+    <div class="ct">
+      <div class="ct-title">🌎 Geo Analytics</div>
+      <div class="ci-item">US State Choropleth Map</div>
+      <div class="ci-item">Top 20 Cities Bar</div>
+      <div class="ci-item">Region Pie Chart</div>
+      <div class="ci-item">State-Level Sales Summary table</div>
+    </div>
+    <div class="ct">
+      <div class="ct-title">👤 Customer Analytics</div>
+      <div class="ci-item">Gender Distribution Donut</div>
+      <div class="ci-item">Payment Mode Pie</div>
+      <div class="ci-item">Age Group Bar</div>
+      <div class="ci-item">Customer Lifetime Value Histogram</div>
+      <div class="ci-item">New vs Returning Customers</div>
+    </div>
+  </div>
+
+  <div class="kpi-strip">
+    <span style="font-size:11px;color:var(--muted);font-weight:700;">KPI Cards:</span>
+    <span class="kc">💰 Total Revenue</span>
+    <span class="kc">🔢 Transactions</span>
+    <span class="kc">📦 Avg Order Value</span>
+    <span class="kc">📊 Units Sold</span>
+    <span class="kc">👤 Unique Customers</span>
+    <span class="kc">🏆 Best Month</span>
+    <span style="font-size:11px;color:var(--muted);font-weight:700;margin-left:12px;">Filters:</span>
+    <span class="kc">📅 Date Range</span>
+    <span class="kc">📦 Category</span>
+    <span class="kc">🌎 State</span>
+    <span class="kc">💳 Payment Mode</span>
+    <span style="font-size:11px;color:var(--muted);margin-left:8px;">YoY comparison vs prior-year calendar window</span>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     SECTION 6 — POS TRANSACTION FLOW
+════════════════════════════════════════════════════════ -->
+<div class="sec-label">Point of Sale — Transaction Flow</div>
+<div class="pos-flow">
+  <div class="pos-steps">
+    <div class="ps">
+      <div class="ps-icon">📦</div>
+      <div class="ps-name">Select Product</div>
+      <div class="ps-desc">Category → Sub-category → Product<br>15 cats · 300+ SKUs<br>SKU · Brand · Cost · Price chips</div>
+    </div>
+    <div class="pa">→</div>
+    <div class="ps">
+      <div class="ps-icon">🛒</div>
+      <div class="ps-name">Build Cart</div>
+      <div class="ps-desc">Qty (1–99) + Discount %<br>0–50% in 5% steps<br>Live subtotal preview</div>
+    </div>
+    <div class="pa">→</div>
+    <div class="ps">
+      <div class="ps-icon">👤</div>
+      <div class="ps-name">Customer Info</div>
+      <div class="ps-desc">Name · Email (required)<br>Phone · City · State · ZIP<br>Age group · Gender</div>
+    </div>
+    <div class="pa">→</div>
+    <div class="ps">
+      <div class="ps-icon">💳</div>
+      <div class="ps-name">Payment</div>
+      <div class="ps-desc">Cash · Credit · Debit<br>Digital Wallet · Store Credit<br>Optional Ref #</div>
+    </div>
+    <div class="pa">→</div>
+    <div class="ps">
+      <div class="ps-icon">🧮</div>
+      <div class="ps-name">Tax Calc</div>
+      <div class="ps-desc">State-specific rates<br>0% (OR/NH) → 7.25% (CA)<br>50 US states covered</div>
+    </div>
+    <div class="pa">→</div>
+    <div class="ps">
+      <div class="ps-icon">💾</div>
+      <div class="ps-name">Write to Excel</div>
+      <div class="ps-desc">Upsert dim_customer<br>Upsert dim_geography<br>Append fact_sales rows</div>
+    </div>
+    <div class="pa">→</div>
+    <div class="ps">
+      <div class="ps-icon">🧾</div>
+      <div class="ps-name">Receipt Modal</div>
+      <div class="ps-desc">Full transaction summary<br>Gross · Disc · Tax · Total<br>st.dialog overlay</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     SECTION 7 — ADMIN HUB
+════════════════════════════════════════════════════════ -->
+<div class="sec-label">Admin Hub — IT Manager Only</div>
+<div class="admin-grid">
+  <div class="admin-card">
+    <div class="admin-title">👥 Session &amp; Usage Tracking</div>
+    <div class="admin-item">Total sessions · Active now · Avg duration</div>
+    <div class="admin-item">Most active role KPI</div>
+    <div class="admin-item">Sessions by Role (bar + pie charts)</div>
+    <div class="admin-item">Sessions Over Time (stacked bar)</div>
+    <div class="admin-item">Searchable session log table</div>
+    <div class="admin-item">Active sessions highlighted green</div>
+  </div>
+  <div class="admin-card">
+    <div class="admin-title">📋 System Event Log</div>
+    <div class="admin-item">INFO / WARNING / ERROR counters</div>
+    <div class="admin-item">Filter by level · source · event</div>
+    <div class="admin-item">Keyword search across messages</div>
+    <div class="admin-item">Color-coded rows (red=ERROR, amber=WARN)</div>
+    <div class="admin-item">Events by Level (bar) + Source (pie)</div>
+    <div class="admin-item">Event Timeline scatter (hourly)</div>
+  </div>
+  <div class="admin-card">
+    <div class="admin-title">🩺 System Health Panel</div>
+    <div class="admin-item">sales_data.xlsx file size + last modified</div>
+    <div class="admin-item">session_log.csv + system_log.csv sizes</div>
+    <div class="admin-item">Total fact_sales rows + cumulative revenue</div>
+    <div class="admin-item">Sheet row counts table (all 5 sheets)</div>
+    <div class="admin-item">Recent errors (last 5 ERROR events)</div>
+    <div class="admin-item">Auto-refresh toggle (30-second interval)</div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<div class="footer">
+  🧸 ToyWorld Retail &nbsp;·&nbsp; End-to-End Retail Management System &nbsp;·&nbsp;
+  Streamlit + Python 3.13 &nbsp;·&nbsp; Star Schema (5 tables) &nbsp;·&nbsp; 16 Plotly Charts &nbsp;·&nbsp; 3 Roles &nbsp;·&nbsp; 4 Pages
+</div>
+
+</body>
+</html>

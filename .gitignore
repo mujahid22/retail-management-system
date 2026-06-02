@@ -1,0 +1,22 @@
+# Secrets — never commit real credentials
+.streamlit/secrets.toml
+
+# Generated data files — stored in Supabase after migration
+data/sales_data.xlsx
+data/session_log.csv
+data/system_log.csv
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Local uv tooling
+.python-version
+uv.lock
